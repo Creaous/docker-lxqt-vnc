@@ -25,6 +25,12 @@ RUN pacman-key --init && \
     papirus-icon-theme \
     adwaita-icon-theme \
     hicolor-icon-theme \
+    ttf-dejavu \
+    ttf-liberation \
+    noto-fonts \
+    noto-fonts-emoji \
+    ttf-opensans \
+    ttf-roboto \
     sudo \
     bash \
     base-devel \

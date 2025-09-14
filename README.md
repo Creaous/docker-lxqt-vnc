@@ -19,7 +19,7 @@ A lightweight Docker container providing a complete LXQT desktop environment acc
 docker build -t lxqt-vnc .
 
 # Run with default settings (root user, password: "password")
-docker run -d -p 5901:5901 lxqt-vnc
+docker run -d -p 5901:5901 --cap-add=SYS_ADMIN --cap-add=SYS_PTRACE lxqt-vnc
 
 # Connect with VNC client to localhost:5901
 ```
@@ -30,6 +30,7 @@ docker run -d -p 5901:5901 lxqt-vnc
 docker run -d -p 5901:5901 \
   -e VNC_USER=myuser \
   -e VNC_PASSWORD=mypassword \
+  --cap-add=SYS_ADMIN --cap-add=SYS_PTRACE \
   lxqt-vnc
 ```
 
@@ -51,6 +52,7 @@ docker run -d --name dev-desktop \
   -e VNC_PASSWORD=dev123 \
   -e SUDO_NOPASSWD=true \
   -v $(pwd)/workspace:/home/developer/workspace \
+  --cap-add=SYS_ADMIN --cap-add=SYS_PTRACE \
   lxqt-vnc
 ```
 
@@ -67,6 +69,11 @@ services:
       - SUDO_NOPASSWD=true
     volumes:
       - ./workspace:/home/developer/workspace
+    cap_add:
+      - SYS_ADMIN
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
     restart: unless-stopped
 ```
 
@@ -122,6 +129,37 @@ docker exec -it <container-name> file /entrypoint.d/pre-init/01-script.sh
 - Verify the correct password is being used
 - Check container logs: `docker logs <container-name>`
 - Ensure port 5901 is properly exposed
+
+### Namespace Permission Errors
+If you see errors like "Failed to move to new namespace" or "Operation not permitted":
+
+```bash
+# Option 1: Run with privileged mode (most permissive)
+docker run -d --privileged -p 5901:5901 lxqt-vnc
+
+# Option 2: Add specific capabilities (recommended)
+docker run -d --cap-add=SYS_ADMIN --cap-add=SYS_PTRACE \
+  -p 5901:5901 lxqt-vnc
+
+# Option 3: Disable security profiles (if needed)
+docker run -d --security-opt seccomp=unconfined \
+  --security-opt apparmor=unconfined \
+  -p 5901:5901 lxqt-vnc
+
+# Option 4: For Docker Compose
+services:
+  lxqt-desktop:
+    build: .
+    ports:
+      - "5901:5901"
+    cap_add:
+      - SYS_ADMIN
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+```
+
+**Note**: These errors typically occur when browser-based applications try to create sandboxes. The above solutions provide the necessary permissions for proper desktop functionality.
 
 ### User Issues
 - Custom users are created automatically with sudo privileges

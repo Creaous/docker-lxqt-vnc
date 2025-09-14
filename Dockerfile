@@ -1,34 +1,34 @@
-FROM archlinux:latest
+FROM archlinux:multilib-devel
 
 # Setup keyring and install packages in a single layer
 RUN pacman-key --init && \
     pacman-key --populate archlinux && \
     pacman -Syu --noconfirm \
-        tigervnc \
-        lxqt \
-        lxqt-config \
-        lximage-qt \
-        lxqt-about \
-        lxqt-archiver \
-        lxqt-globalkeys \
-        lxqt-notificationd \
-        lxqt-openssh-askpass \
-        lxqt-runner \
-        lxqt-sudo \
-        obconf-qt \
-        qps \
-        qterminal \
-        screengrab \
-        xdg-desktop-portal-lxqt \
-        xorg-xdpyinfo \
-        papirus-icon-theme \
-        adwaita-icon-theme \
-        hicolor-icon-theme \
-        sudo \
-        bash \
-        base-devel \
-        git \
-        dbus && \
+    tigervnc \
+    lxqt \
+    lxqt-config \
+    lximage-qt \
+    lxqt-about \
+    lxqt-archiver \
+    lxqt-globalkeys \
+    lxqt-notificationd \
+    lxqt-openssh-askpass \
+    lxqt-runner \
+    lxqt-sudo \
+    obconf-qt \
+    qps \
+    qterminal \
+    screengrab \
+    xdg-desktop-portal-lxqt \
+    xorg-xdpyinfo \
+    papirus-icon-theme \
+    adwaita-icon-theme \
+    hicolor-icon-theme \
+    sudo \
+    bash \
+    base-devel \
+    git \
+    dbus && \
     pacman -Scc --noconfirm
 
 # Create builder user, install paru, and cleanup in one layer
